@@ -184,3 +184,9 @@ components:
         deviceProvidesPin:
           type: boolean
           description: This flag determines whether the device shows a PIN that must be entered in the client.
+    FinalizePairingResponse:
+      type: object
+      properties:
+        deviceHasPaired:
+          type: boolean
+          description: This flag determines whether the device was successfully paired.
