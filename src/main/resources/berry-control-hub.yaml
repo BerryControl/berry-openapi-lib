@@ -20,13 +20,111 @@ paths:
                 $ref: "#/components/schemas/DeviceDrivers"
         "406":
           description: Not Acceptable
+  /device-drivers/{driverId}/devices:
+    get:
+      description: Read all devices that are supported by the driver with the given driver ID
+      operationId: readDevices
+      parameters:
+        - name: driverId
+          in: path
+          description: Driver ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successfully read the devices
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceInfos"
+        "404":
+          description: Driver not found.
+        "406":
+          description: Not Acceptable
+  /device-drivers/{driverId}/devices/{deviceId}/start_pairing:
+    post:
+      description: Start the pairing process for the device with the given device ID.
+      operationId: startPairing
+      parameters:
+        - name: driverId
+          in: path
+          description: Driver ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: deviceId
+          in: path
+          description: Device ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/StartPairingRequest'
+      responses:
+        "200":
+          description: Successfully started pairing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StartPairingResponse"
+        "404":
+          description: Driver or device not found.
+        "406":
+          description: Not Acceptable
+  /device-drivers/{driverId}/devices/{deviceId}/finalize_pairing/{pairingRequestId}:
+    post:
+      description: Finalize the pairing process for the device with the given device ID.
+      operationId: finalizePairing
+      parameters:
+        - name: driverId
+          in: path
+          description: Driver ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: deviceId
+          in: path
+          description: Device ID
+          required: true
+          schema:
+            type: string
+        - name: pairingRequestId
+          in: path
+          description: Pairing Request ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinalizePairingRequest'
+      responses:
+        "200":
+          description: Successfully finalized pairing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinalizePairingResponse"
+        "404":
+          description: Driver, device or pairing request not found.
+        "406":
+          description: Not Acceptable
 
 components:
   schemas:
     DeviceDriver:
       type: object
       properties:
-        pluginId:
+        driverId:
           type: string
           format: uuid
           description: The ID of the device driver.
@@ -48,3 +146,41 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/DeviceDriver"
+    DeviceInfo:
+      type: object
+      properties:
+        deviceId:
+          type: string
+          description: The ID of the device.
+        name:
+          type: string
+          description: The device name.
+    DeviceInfos:
+      type: array
+      items:
+        $ref: "#/components/schemas/DeviceInfo"
+    StartPairingRequest:
+      type: object
+      properties:
+        remoteName:
+          type: string
+          description: The name of the remote.
+    StartPairingResponse:
+      type: object
+      properties:
+        pairingRequest:
+          type: string
+          format: uuid
+          description: The pairing request ID.
+        deviceProvidesPin:
+          type: boolean
+          description: This flag determines whether the device shows a PIN that must be entered in the client.
+    FinalizePairingRequest:
+      type: object
+      properties:
+        pin:
+          type: string
+          description: The PIN entered by the user
+        deviceProvidesPin:
+          type: boolean
+          description: This flag determines whether the device shows a PIN that must be entered in the client.
