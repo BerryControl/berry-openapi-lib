@@ -295,7 +295,6 @@ components:
         deviceHasPaired:
           type: boolean
           description: This flag determines whether the device was successfully paired.
-
     PairedDevice:
       type: object
       properties:
@@ -303,6 +302,14 @@ components:
           type: string
           format: uuid
           description: The pairing ID of the paired device.
+        driverId:
+          type: string
+          format: uuid
+          description: The driver ID of the paired device.
+        deviceId:
+          type: string
+          format: uuid
+          description: The device ID of the paired device.
         deviceName:
           type: string
           description: Name of the device.
