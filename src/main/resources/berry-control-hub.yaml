@@ -7,6 +7,7 @@ info:
   version: 0.1.0
 
 paths:
+  ##### Pairing Devices #####
   /device-drivers:
     get:
       description: Read all installed device drivers
@@ -119,6 +120,110 @@ paths:
         "406":
           description: Not Acceptable
 
+  ##### Controlling and Managing paired Devices #####
+  /paired-devices:
+    get:
+      description: Read the list of paired devices.
+      operationId: readPairedDevices
+      responses:
+        "200":
+          description: Successfully read the paired devices.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PairedDevices"
+        "406":
+          description: Not Acceptable
+  /paired-devices/{pairingId}:
+    delete:
+      description: Unpair the device.
+      operationId: unpairDevice
+      parameters:
+        - name: pairingId
+          in: path
+          description: Pairing ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Successfully read the unpaired the device.
+        "404":
+          description: Pairing not found.
+  /paired-devices/{pairingId}/commands:
+    get:
+      description: Get the commands supported by the device.
+      operationId: readDeviceCommands
+      parameters:
+        - name: pairingId
+          in: path
+          description: Pairing ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successfully read the commands of the paired device.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceCommands"
+        "404":
+          description: Pairing not found.
+        "406":
+          description: Not Acceptable
+  /paired-devices/{pairingId}/remote-layout:
+    get:
+      description: Get the layout of the remote control for the device.
+      operationId: readDeviceRemoteLayout
+      parameters:
+        - name: pairingId
+          in: path
+          description: Pairing ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successfully read the remote of the paired device.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RemoteLayout"
+        "404":
+          description: Pairing not found.
+        "406":
+          description: Not Acceptable
+  /paired-devices/{pairingId}/execute-command/{commandId}:
+    post:
+      description: Execute the command on the paired device.
+      operationId: executeDeviceCommand
+      parameters:
+        - name: pairingId
+          in: path
+          description: Pairing ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: commandId
+          in: path
+          description: Command ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Successfully read the remote of the paired device.
+        "400":
+          description: Error while executing the command
+        "404":
+          description: Pairing not found.
+
+
 components:
   schemas:
     DeviceDriver:
@@ -190,3 +295,62 @@ components:
         deviceHasPaired:
           type: boolean
           description: This flag determines whether the device was successfully paired.
+
+    PairedDevice:
+      type: object
+      properties:
+        pairingId:
+          type: string
+          format: uuid
+          description: The pairing ID of the paired device.
+        deviceName:
+          type: string
+          description: Name of the device.
+    PairedDevices:
+      type: array
+      items:
+        $ref: "#/components/schemas/PairedDevice"
+    DeviceCommand:
+      type: object
+      properties:
+        pairingId:
+          type: string
+          format: uuid
+          description: The pairing ID of the paired device.
+        driverId:
+          type: string
+          format: uuid
+          description: The driver ID of the paired device.
+        deviceId:
+          type: string
+          format: uuid
+          description: The ID of the paired device.
+        commandId:
+          type: integer
+          description: The command ID.
+        name:
+          type: string
+          description: The command name.
+        icon:
+          type: string
+          description: Base64 encoded data of the command icon.
+    DeviceCommands:
+      type: array
+      items:
+        $ref: "#/components/schemas/DeviceCommand"
+    RemoteLayout:
+      type: object
+      properties:
+        width:
+          type: integer
+          description: Width of the layout
+        height:
+          type: integer
+          description: Height of the layout
+        buttons:
+          type: array
+          items:
+            type: array
+            items:
+              type: integer
+          description: Array with the command IDs for the buttons
