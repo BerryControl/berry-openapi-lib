@@ -308,7 +308,6 @@ components:
           description: The driver ID of the paired device.
         deviceId:
           type: string
-          format: uuid
           description: The device ID of the paired device.
         deviceName:
           type: string
