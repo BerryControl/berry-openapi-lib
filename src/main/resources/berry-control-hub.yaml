@@ -339,6 +339,7 @@ components:
           description: The command name.
         icon:
           type: string
+          format: byte
           description: Base64 encoded data of the command icon.
     DeviceCommands:
       type: array
